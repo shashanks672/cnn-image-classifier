@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Digit Classifier</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: white;
+            text-align: center;
+            padding-top: 80px;
+        }
+
+        .container {
+            background: #111827;
+            padding: 40px;
+            border-radius: 15px;
+            width: 350px;
+            margin: auto;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        input[type="file"] {
+            margin: 20px 0;
+            color: white;
+        }
+
+        button {
+            background: #22c55e;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            color: black;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #16a34a;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        img {
+            margin-top: 20px;
+            max-width: 150px;
+            border-radius: 10px;
+        }
+
+        .loading {
+            margin-top: 15px;
+            color: #38bdf8;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>🤖 AI Digit Classifier</h1>
+
+    <input type="file" id="fileInput" accept="image/*" />
+    <br>
+    <button onclick="predict()">Predict</button>
+
+    <div id="loading" class="loading"></div>
+
+    <img id="preview" src="" />
+
+    <div id="result"></div>
+</div>
+
+<script>
+async function predict() {
+    const fileInput = document.getElementById("fileInput");
+    const file = fileInput.files[0];
+
+    if (!file) {
+        alert("Please select an image!");
+        return;
+    }
+
+    // Show preview
+    const preview = document.getElementById("preview");
+    preview.src = URL.createObjectURL(file);
+
+    // Show loading
+    document.getElementById("loading").innerText = "⏳ Predicting...";
+
+    let formData = new FormData();
+    formData.append("file", file);
+
+    try {
+        const response = await fetch("http://127.0.0.1:5000/predict", {
+            method: "POST",
+            body: formData
+        });
+
+        const data = await response.json();
+
+        document.getElementById("result").innerText =
+            "Prediction: " + data.prediction;
+
+    } catch (error) {
+        document.getElementById("result").innerText = "❌ Error connecting to API";
+    }
+
+    document.getElementById("loading").innerText = "";
+}
+</script>
+
+</body>
+</html>
